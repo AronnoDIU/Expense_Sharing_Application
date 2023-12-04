@@ -30,22 +30,27 @@ public class ExpenseSharingApp {
                     login();
                     break;
                 case 3:
-                    // Add expense related features
+                    addExpense(null);
                     break;
                 case 4:
                     // Add export feature
+                    exportExpenses();
                     break;
                 case 5:
                     // Add filtering feature
+                    expenseFiltering();
                     break;
                 case 6:
                     // Add equally split feature
+                    equallySplitExpenses();
                     break;
                 case 7:
                     // Add edit or delete feature
+                    editOrDeleteExpense(null);
                     break;
                 case 8:
                     // Add graphical representation feature
+                    expenseSummaryGraphs();
                     break;
                 case 9:
                     System.out.println("Exiting the Advanced Expense Sharing App. Goodbye!");
