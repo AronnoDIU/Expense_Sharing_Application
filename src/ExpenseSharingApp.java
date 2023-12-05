@@ -116,7 +116,7 @@ public class ExpenseSharingApp {
         System.out.print("\nEnter the name of the person incurring the expense: ");
         String person = scanner.nextLine();
 
-        if (!userExists(person)) {
+        if (userExists(person)) {
             System.out.println("Invalid person. Please enter a valid name.");
             return;
         }
@@ -142,10 +142,10 @@ public class ExpenseSharingApp {
     private static boolean userExists(String person) {
         for (User user : users) {
             if (user.username.equals(person)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private static void exportToCSV() {
@@ -178,7 +178,7 @@ public class ExpenseSharingApp {
         System.out.print("\nEnter the person's name to filter expenses: ");
         String person = scanner.nextLine();
 
-        if (!userExists(person)) {
+        if (userExists(person)) {
             System.out.println("Invalid person. Please enter a valid name.");
             return;
         }
@@ -211,33 +211,39 @@ public class ExpenseSharingApp {
     }
 
     private static void editOrDeleteExpense() {
-        System.out.print("\nEnter the index of the expense to edit or delete: ");
-        int index = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        System.out.print("\\nEnter the index of the expense to edit or delete: ");
 
-        if (index >= 0 && index < expenses.size()) {
-            Expense expense = expenses.get(index);
-
-            System.out.print("Do you want to edit (E) or delete (D) the expense? ");
-            char choice = scanner.next().charAt(0);
+        if (scanner.hasNextInt()) {
+            int index = scanner.nextInt();
             scanner.nextLine(); // Consume the newline character
 
-            switch (choice) {
-                case 'E':
-                case 'e':
-                    editExpense(expense);
-                    break;
-                case 'D':
-                case 'd':
-                    expenses.remove(index);
-                    System.out.println("Expense deleted successfully!");
-                    break;
-                default:
-                    System.out.println("Invalid choice. No changes made.");
-                    break;
+            if (index >= 0 && index < expenses.size()) {
+                Expense expense = expenses.get(index);
+
+                System.out.print("Do you want to edit (E) or delete (D) the expense? ");
+                char choice = scanner.next().charAt(0);
+                scanner.nextLine(); // Consume the newline character
+
+                switch (choice) {
+                    case 'E':
+                    case 'e':
+                        editExpense(expense);
+                        break;
+                    case 'D':
+                    case 'd':
+                        expenses.remove(index);
+                        System.out.println("Expense deleted successfully!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. No changes made.");
+                        break;
+                }
+            } else {
+                System.out.println("Invalid index. No changes made.");
             }
         } else {
-            System.out.println("Invalid index. No changes made.");
+            System.out.println("Invalid input. Please enter an integer.");
+            scanner.nextLine(); // Consume the invalid token
         }
     }
 
