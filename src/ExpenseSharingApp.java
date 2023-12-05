@@ -1,5 +1,6 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,26 +31,21 @@ public class ExpenseSharingApp {
                     login();
                     break;
                 case 3:
-                    addExpense(null);
+                    addExpense();
                     break;
                 case 4:
-                    // Add export feature
-                    exportExpenses();
+                    exportToCSV();
                     break;
                 case 5:
-                    // Add filtering feature
-                    expenseFiltering();
+                    filterExpenses();
                     break;
                 case 6:
-                    // Add equally split feature
                     equallySplitExpenses();
                     break;
                 case 7:
-                    // Add edit or delete feature
-                    editOrDeleteExpense(null);
+                    editOrDeleteExpense();
                     break;
                 case 8:
-                    // Add graphical representation feature
                     expenseSummaryGraphs();
                     break;
                 case 9:
@@ -116,13 +112,11 @@ public class ExpenseSharingApp {
         return null;
     }
 
-    // Add more methods for expense-related features, exporting, filtering, splitting, editing, and graphing
-
-    private static void addExpense(User currentUser) {
+    private static void addExpense() {
         System.out.print("\nEnter the name of the person incurring the expense: ");
         String person = scanner.nextLine();
 
-        if (!people.contains(person)) {
+        if (!userExists(person)) {
             System.out.println("Invalid person. Please enter a valid name.");
             return;
         }
@@ -143,6 +137,15 @@ public class ExpenseSharingApp {
 
         expenses.add(new Expense(person, amount, category, date, comment));
         System.out.println("Expense added successfully!");
+    }
+
+    private static boolean userExists(String person) {
+        for (User user : users) {
+            if (user.username.equals(person)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void exportToCSV() {
@@ -175,7 +178,7 @@ public class ExpenseSharingApp {
         System.out.print("\nEnter the person's name to filter expenses: ");
         String person = scanner.nextLine();
 
-        if (!people.contains(person)) {
+        if (!userExists(person)) {
             System.out.println("Invalid person. Please enter a valid name.");
             return;
         }
@@ -197,17 +200,17 @@ public class ExpenseSharingApp {
         double commonExpense = scanner.nextDouble();
         scanner.nextLine(); // Consume the newline character
 
-        int numPeople = people.size();
+        int numPeople = users.size();
 
-        for (String person : people) {
+        for (User user : users) {
             double equalShare = commonExpense / numPeople;
-            expenses.add(new Expense(person, equalShare, "Equal Split", new Date(), "Equally split expense"));
+            expenses.add(new Expense(user.username, equalShare, "Equal Split", new Date(), "Equally split expense"));
         }
 
         System.out.println("Expenses equally split among participants!");
     }
 
-    private static void editOrDeleteExpense(User currentUser) {
+    private static void editOrDeleteExpense() {
         System.out.print("\nEnter the index of the expense to edit or delete: ");
         int index = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
@@ -215,27 +218,23 @@ public class ExpenseSharingApp {
         if (index >= 0 && index < expenses.size()) {
             Expense expense = expenses.get(index);
 
-            if (expense.person.equals(currentUser.username)) {
-                System.out.print("Do you want to edit (E) or delete (D) the expense? ");
-                char choice = scanner.next().charAt(0);
-                scanner.nextLine(); // Consume the newline character
+            System.out.print("Do you want to edit (E) or delete (D) the expense? ");
+            char choice = scanner.next().charAt(0);
+            scanner.nextLine(); // Consume the newline character
 
-                switch (choice) {
-                    case 'E':
-                    case 'e':
-                        editExpense(expense);
-                        break;
-                    case 'D':
-                    case 'd':
-                        expenses.remove(index);
-                        System.out.println("Expense deleted successfully!");
-                        break;
-                    default:
-                        System.out.println("Invalid choice. No changes made.");
-                        break;
-                }
-            } else {
-                System.out.println("You can only edit or delete your own expenses.");
+            switch (choice) {
+                case 'E':
+                case 'e':
+                    editExpense(expense);
+                    break;
+                case 'D':
+                case 'd':
+                    expenses.remove(index);
+                    System.out.println("Expense deleted successfully!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. No changes made.");
+                    break;
             }
         } else {
             System.out.println("Invalid index. No changes made.");
@@ -269,5 +268,14 @@ public class ExpenseSharingApp {
         // Add code for generating graphs (e.g., pie charts, bar graphs) based on the expenses
         // You may use external libraries like JFreeChart for graphical representations
         System.out.println("Graphical representation feature coming soon!");
+    }
+
+    private static Date parseDate(String dateString) {
+        try {
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            System.out.println("Error parsing date. Using current date.");
+            return new Date();
+        }
     }
 }
